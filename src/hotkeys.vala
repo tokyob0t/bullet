@@ -2,15 +2,31 @@ using X;
 using GLib;
 
 namespace Bullet {
+    // Mimic astal get_default function
+    public HotkeyDaemon get_default() {
+        return HotkeyDaemon.get_default();
+    }
+
     public class HotkeyDaemon : Object {
+        private static HotkeyDaemon _instance;
         internal X.Display display;
         internal X.Window root;
 
         public List<Bind> binds;
 
-        public HotkeyDaemon() {
+        private HotkeyDaemon() {
             display = new X.Display();
             root = display.default_screen().root;
+        }
+
+        public static HotkeyDaemon get_default() {
+            if (_instance != null) 
+                return _instance;
+
+            HotkeyDaemon i = new HotkeyDaemon();
+            _instance = i;
+
+            return i;
         }
 
         public void start_async() {
@@ -19,7 +35,7 @@ namespace Bullet {
 
         public void start_sync() {
             start_async();
-            new GLib.MainLoop().run();
+            new MainLoop(null, false).run();
         }
 
         private void _start(){
@@ -27,11 +43,7 @@ namespace Bullet {
 
             while (true) {
                 display.next_event(ref event);
-                try {
-                    handle_event(event);
-                } catch (Error err) {
-                    critical(err.message);
-                }
+                handle_event(event);
             }
         }
 
@@ -48,15 +60,15 @@ namespace Bullet {
             binds.append(bind);
         }
 
-        public void handle_event(X.Event event) throws Error {
+        public void handle_event(X.Event event) {
             if (event.type == X.EventType.KeyPress || event.type == X.EventType.KeyRelease) {
                 foreach (Bind b in binds) {
                     if (b.keycode == event.xkey.keycode && (event.xkey.state & b.modifiers) == b.modifiers) {
-                        if (event.type == X.EventType.KeyPress && b.press_callback != null)
-                            b.press_callback();
+                        if (event.type == X.EventType.KeyPress)
+                            b.pressed();
 
-                        if (event.type == X.EventType.KeyRelease && b.release_callback!= null)
-                            b.release_callback();
+                        if (event.type == X.EventType.KeyRelease)
+                            b.released();
 
                         return;
                     }
