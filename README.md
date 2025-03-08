@@ -6,9 +6,8 @@
 To build and run this project, you need the following packages:
 
 - `meson`
-- `libglib2.0-dev` (Debian) ) / `glib2` (Arch)
-- `libgobject2.0-dev` (Debian) / `glib2` (Arch)
-- `libx11-dev` (Debian) (Fedora) / `libx11` (Arch)
+- `glib2`
+- `libx11`
 
 ### Installation
 ```sh
