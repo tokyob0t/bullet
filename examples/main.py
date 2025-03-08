@@ -11,7 +11,7 @@ def bind(modifiers, key, on_press=None, on_release=None):
         new_bind.connect('pressed', on_press)
 
     if on_release:
-        new_bind.connect('pressed', on_release)
+        new_bind.connect('released', on_release)
 
     return new_bind
 
