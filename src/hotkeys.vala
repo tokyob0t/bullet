@@ -3,22 +3,18 @@ using GLib;
 
 namespace Bullet {
     public class HotkeyDaemon : Object {
-        private static HotkeyDaemon _instance;
         internal X.Display display;
         internal X.Window root;
 
         public List<Bind> binds;
 
         public HotkeyDaemon() {
-            if (_instance == null) {
-                _instance = this;
-                display = new X.Display();
-                root = display.default_screen().root;
-            }
+            display = new X.Display();
+            root = display.default_screen().root;
         }
 
         public void start_async() {
-            Thread<void> thread = Thread<void>.create(_start, false);
+            Thread<void> _ = new Thread<void>(null, _start);
         }
 
         public void start_sync() {

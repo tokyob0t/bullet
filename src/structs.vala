@@ -2,7 +2,6 @@ using X;
 
 namespace Bullet {
     public class Bind : Object {
-
         public ModKey modifiers { get; construct set; }
         public string key { get; construct set; }
         public Callback? press_callback { get; construct set; }
