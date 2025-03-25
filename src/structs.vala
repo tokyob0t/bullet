@@ -18,6 +18,7 @@ namespace Bullet {
 
     [Flags]
     public enum ModKey {
+        NONE = 0,
         SHIFT = 1,
         CTRL = 4,
         ALT = 8,

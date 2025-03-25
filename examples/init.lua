@@ -18,5 +18,9 @@ daemon:add_bind(bind(ModKey.SUPER, "y", function()
 	print("pressed")
 end))
 
+daemon:add_bind(bind(ModKey.NONE, "XF86AudioMute", function()
+	print("pressed")
+end))
+
 daemon:start_async()
 GLib.MainLoop():run()
