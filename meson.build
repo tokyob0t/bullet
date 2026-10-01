@@ -2,7 +2,7 @@ project(
   'bullet',
   'vala',
   'c',
-  version: run_command('cat', join_paths(meson.project_source_root(), 'version')).stdout().strip(),
+  version: run_command('cat', meson.project_source_root() / 'version').stdout().strip(),
   meson_version: '>= 0.62.0',
   default_options: [
     'warning_level=2',
@@ -12,24 +12,29 @@ project(
 )
 
 version_split = meson.project_version().split('.')
-api_version = version_split[0] + '.' + version_split[1]
+major_version = version_split[0]
+api_version = major_version + '.' + version_split[1]
 gir = 'Bullet-' + api_version + '.gir'
 typelib = 'Bullet-' + api_version + '.typelib'
 
 config = configure_file(
-  input: 'config.vala.in',
+  input: 'src/config.vala.in',
   output: 'config.vala',
   configuration: {
     'API_VERSION': api_version,
     'VERSION': meson.project_version(),
-    'MAJOR_VERSION': version_split[0],
+    'MAJOR_VERSION': major_version,
     'MINOR_VERSION': version_split[1],
     'MICRO_VERSION': version_split[2],
   },
 )
 
-sources = [config, 'hotkeys.vala', 'structs.vala']
-deps = [dependency('glib-2.0'), dependency('gobject-2.0'), dependency('x11')]
+sources = [config, 'src/hotkeys.vala', 'src/structs.vala']
+deps = [
+  dependency('glib-2.0'),
+  dependency('gobject-2.0'),
+  dependency('x11'),
+]
 
 lib = library(
   meson.project_name(),
@@ -39,8 +44,14 @@ lib = library(
   vala_vapi: meson.project_name() + '-' + api_version + '.vapi',
   vala_gir: gir,
   version: meson.project_version(),
+  soversion: 0,
   install: true,
-  install_dir: [true, true, true, true],
+  install_dir: [
+    get_option('libdir'),
+    get_option('includedir') / meson.project_name(),
+    get_option('datadir') / 'vala' / 'vapi',
+    get_option('datadir') / 'gir-1.0',
+  ],
 )
 
 import('pkgconfig').generate(
@@ -48,7 +59,6 @@ import('pkgconfig').generate(
   name: meson.project_name(),
   filebase: meson.project_name() + '-' + api_version,
   version: meson.project_version(),
-  subdirs: meson.project_name(),
   requires: deps,
   install_dir: get_option('libdir') / 'pkgconfig',
 )
